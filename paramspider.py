@@ -34,6 +34,7 @@ def main():
     parser.add_argument('-e','--exclude', help= 'extensions to exclude [ex --exclude php,aspx]')
     parser.add_argument('-o','--output' , help = 'Output file name [by default it is \'domain.txt\']')
     parser.add_argument('-p','--placeholder' , help = 'The string to add as a placeholder after the parameter name.', default = "FUZZ")
+    parser.add_argument('-sdex','--subdomainEX',help='subdomain to exclude [ex : --subdomainEX cdn,test]')
     parser.add_argument('-q', '--quiet', help='Do not print the results to the screen', action='store_true')
     parser.add_argument('-r', '--retries', help='Specify number of retries for 4xx and 5xx errors', default=3)
     args = parser.parse_args()
@@ -68,6 +69,14 @@ def main():
     if args.exclude:
         print(f"\u001b[31m[!] URLS containing these extensions will be excluded from the results   : {black_list}\u001b[0m\n")
     
+    if args.subdomainEX:
+        if "," in args.subdomainEX:
+             black_list = args.subdomainEX.split(",")
+             for i in range(len(black_list)):
+                 black_list[i] = black_list[i] +  "." 
+        else:
+             black_list.append(args.subdomainEX +  ".") 
+
     final_uris = extractor.param_extract(response , args.level , black_list, args.placeholder)
     save_it.save_func(final_uris , args.output , args.domain)
 
